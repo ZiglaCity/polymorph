@@ -2,6 +2,8 @@
   "packageManager": "yarn@4.5.3",
   "scripts": {
     "dev": "nodemon src/index.ts",
+    "build": "tsc",
+    "start": "node dist/src/index.js",
     "test": "jest"
   },
   "dependencies": {
