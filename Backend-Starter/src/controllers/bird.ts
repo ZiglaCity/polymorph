@@ -52,3 +52,17 @@ export const updateBird = async (req: Request, res: Response) => {
   }
   return res.status(200).json({ success: true, data });
 };
+
+export const deleteBird = async (req: Request, res: Response) => {
+  const id = req.params.id;
+  const { error } = await supabase.from("birds").delete().eq("id", id);
+  if (error) {
+    console.error("Error deleting bird: ", error);
+    res
+      .status(400)
+      .json({ success: false, message: "Error deleting bird", error });
+  }
+  return res
+    .status(200)
+    .json({ success: true, message: "Bird deleted sucessfully" });
+};
