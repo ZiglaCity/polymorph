@@ -1,8 +1,8 @@
 import axios from "axios";
 import Bird from "./types";
 
-const BASE_URL = "http://localhost:4000";
-// const BASE_URL = "https://polymorph-8y5m.onrender.com";
+// const BASE_URL = "http://localhost:4000";
+const BASE_URL = "https://polymorph-8y5m.onrender.com";
 
 export const getBirds = async (): Promise<Bird[]> => {
   const res = await axios.get(`${BASE_URL}/bird`);

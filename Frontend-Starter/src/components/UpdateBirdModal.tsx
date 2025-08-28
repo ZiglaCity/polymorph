@@ -5,7 +5,7 @@ import { updateBird } from "../api";
 interface Props {
   bird: Bird;
   onClose: () => void;
-  onSaved: (updated: Bird) => void;
+  onSaved: (updated: Bird, success: boolean) => void;
 }
 
 export default function UpdateModal({ bird, onClose, onSaved }: Props) {
@@ -42,7 +42,7 @@ export default function UpdateModal({ bird, onClose, onSaved }: Props) {
 
       const res = await updateBird(bird.id, updated);
 
-      onSaved(updated);
+      onSaved(updated, res.success);
       onClose();
     } catch (e: any) {
       setErr(e?.message ?? "Failed to update bird");
