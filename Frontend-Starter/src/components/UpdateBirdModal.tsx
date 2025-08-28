@@ -1,68 +1,131 @@
 import { useState } from "react";
 import Bird from "../types";
 import { updateBird } from "../api";
-import toast from "react-hot-toast";
 
 interface Props {
   bird: Bird;
   onClose: () => void;
-  onUpdated: () => void;
+  onSaved: (updated: Bird) => void;
 }
 
-export default function UpdateBirdModal({ bird, onClose, onUpdated }: Props) {
-  const [form, setForm] = useState<Bird>(bird);
+export default function UpdateModal({ bird, onClose, onSaved }: Props) {
+  const [commonName, setCommonName] = useState(bird.common_name);
+  const [scientificName, setScientificName] = useState(bird.scientific_name);
+  const [description, setDescription] = useState(bird.description);
+  const [size, setSize] = useState(bird.appearance.size);
+  const [habitatCSV, setHabitatCSV] = useState(bird.habitat.join(", "));
+  const [colorsCSV, setColorsCSV] = useState(bird.appearance.color.join(", "));
+  const [photosCSV, setPhotosCSV] = useState(bird.photos.join(", "));
+  const [saving, setSaving] = useState(false);
+  const [err, setErr] = useState<string | null>(null);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
-  };
+  const toArray = (csv: string) =>
+    csv.split(",").map(s => s.trim()).filter(Boolean);
 
-  const handleSubmit = async () => {
+  const handleSave = async () => {
     try {
-      await updateBird(bird.id, form);
-      toast.success("Bird updated!");
-      onUpdated();
+      setSaving(true);
+      setErr(null);
+
+      const updated: Bird = {
+        ...bird,
+        common_name: commonName,
+        scientific_name: scientificName,
+        description,
+        habitat: toArray(habitatCSV),
+        appearance: {
+          size,
+          color: toArray(colorsCSV),
+        },
+        photos: toArray(photosCSV),
+      };
+
+      const res = await updateBird(bird.id, updated);
+
+      onSaved(updated);
       onClose();
-    } catch {
-      toast.error("Update failed");
+    } catch (e: any) {
+      setErr(e?.message ?? "Failed to update bird");
+    } finally {
+      setSaving(false);
     }
   };
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-40">
-      <div className="bg-white p-6 rounded-lg w-[500px]">
-        <h2 className="text-2xl font-bold">Update Bird</h2>
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+      <div className="bg-white w-full max-w-lg rounded-xl p-6 shadow">
+        <h2 className="text-xl font-semibold mb-4">Edit Bird</h2>
+
+        <label className="block text-sm font-medium">Common name</label>
         <input
-          type="text"
-          name="commonName"
-          value={form.common_name}
-          onChange={handleChange}
-          className="border w-full p-2 my-2"
+          value={commonName}
+          onChange={e => setCommonName(e.target.value)}
+          className="border w-full p-2 rounded mb-3"
         />
+
+        <label className="block text-sm font-medium">Scientific name</label>
         <input
-          type="text"
-          name="scientificName"
-          value={form.scientific_name}
-          onChange={handleChange}
-          className="border w-full p-2 my-2"
+          value={scientificName}
+          onChange={e => setScientificName(e.target.value)}
+          className="border w-full p-2 rounded mb-3"
         />
+
+        <label className="block text-sm font-medium">Description</label>
         <textarea
-          name="description"
-          value={form.description}
-          onChange={(e) => setForm({ ...form, description: e.target.value })}
-          className="border w-full p-2 my-2"
+          value={description}
+          onChange={e => setDescription(e.target.value)}
+          className="border w-full p-2 rounded mb-3"
+          rows={3}
         />
-        <div className="flex gap-2 mt-3">
-          <button
-            onClick={handleSubmit}
-            className="px-3 py-2 bg-green-600 text-white rounded"
-          >
-            Save
-          </button>
+
+        <label className="block text-sm font-medium">Size</label>
+        <input
+          value={size}
+          onChange={e => setSize(parseInt(e.target.value))}
+          className="border w-full p-2 rounded mb-3"
+          placeholder="Small | Medium | Large"
+        />
+
+        <label className="block text-sm font-medium">Habitat (comma-separated)</label>
+        <input
+          value={habitatCSV}
+          onChange={e => setHabitatCSV(e.target.value)}
+          className="border w-full p-2 rounded mb-3"
+          placeholder="Forests, Gardens, Parks"
+        />
+
+        <label className="block text-sm font-medium">Colors (comma-separated)</label>
+        <input
+          value={colorsCSV}
+          onChange={e => setColorsCSV(e.target.value)}
+          className="border w-full p-2 rounded mb-3"
+          placeholder="Brown, Orange, White"
+        />
+
+        <label className="block text-sm font-medium">Photo URLs (comma-separated)</label>
+        <input
+          value={photosCSV}
+          onChange={e => setPhotosCSV(e.target.value)}
+          className="border w-full p-2 rounded mb-3"
+          placeholder="https://..., https://..."
+        />
+
+        {err && <p className="text-red-600 text-sm mb-2">{err}</p>}
+
+        <div className="flex justify-end gap-2 mt-2">
           <button
             onClick={onClose}
-            className="px-3 py-2 bg-gray-600 text-white rounded"
+            className="px-4 py-2 rounded bg-gray-200"
+            disabled={saving}
           >
             Cancel
+          </button>
+          <button
+            onClick={handleSave}
+            className="px-4 py-2 rounded bg-blue-600 text-white"
+            disabled={saving}
+          >
+            {saving ? "Saving..." : "Save"}
           </button>
         </div>
       </div>

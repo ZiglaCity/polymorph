@@ -4,9 +4,10 @@ interface Props {
   birds: Bird[];
   onSelect: (bird: Bird) => void;
   onDelete: (id: string) => void;
+  onEdit: (bird: Bird) => void;
 }
 
-export default function BirdTable({ birds, onSelect, onDelete }: Props) {
+export default function BirdTable({ birds, onSelect, onDelete, onEdit }: Props) {
   if (!birds || birds.length === 0) {
     return <p>No birds available.</p>;
   }
@@ -31,6 +32,12 @@ export default function BirdTable({ birds, onSelect, onDelete }: Props) {
                 className="px-2 py-1 bg-blue-500 text-white rounded"
               >
                 View
+              </button>
+              <button
+                onClick={() => onEdit(bird)}
+                className="px-2 py-1 bg-yellow-500 text-white rounded"
+              >
+                Edit
               </button>
               <button
                 onClick={() => onDelete(bird.id)}
