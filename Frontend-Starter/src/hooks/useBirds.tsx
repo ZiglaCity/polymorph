@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
 import Bird from "../types";
 
-const BASE_URL="http://localhost:4000";
-// const BASE_URL = "https://polymorph-8y5m.onrender.com";
+// const BASE_URL="http://localhost:4000";
+const BASE_URL = "https://polymorph-8y5m.onrender.com";
 
 export function useBirds() {
   const [birds, setBirds] = useState<Bird[]>([]);
