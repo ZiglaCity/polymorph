@@ -1,6 +1,6 @@
 interface Appearance {
   size: number;
-  color: string;
+  color: string[];
 }
 
 interface Bird {
@@ -8,9 +8,9 @@ interface Bird {
   common_name: string;
   scientific_name?: string;
   description?: string;
-  habitat: [string];
+  habitat: string[];
   appearance?: Appearance;
-  photo?: string;
+  photo?: string[];
   created_at?: string;
   updated_at?: string;
 }
@@ -19,9 +19,9 @@ export interface UpdateBirdModel {
   common_name?: string;
   scientific_name?: string;
   description?: string;
-  habitat?: [string];
+  habitat?: string[];
   appearance?: Appearance;
-  photo?: string;
+  photo?: string[];
 }
 
 export default Bird;
